@@ -1,0 +1,35 @@
+Analysis of various runs
+
+
+20231009_S0495
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231009_S0495.grid.fastq -g
+python3 ~/Code/pipeline/utils/fastq_stats.py -i 20231009_S0495.grid.fastq
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/synth.fasta --in 20231009_S0495.grid.fastq --out 20231009_S0495.grid.txt
+
+20231107_S0530
+quick look first:
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231107_S0530.fastq -p 0.18 0.10 0.01
+python3 ~/Code/pipeline/utils/fastq_stats.py -i 20231107_S0530.fastq 
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/synth.fasta --in 20231107_S0530.fastq --out 20231107_S0530.txt
+grid:
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231107_S0530.grid.fastq -g
+python3 ~/Code/pipeline/utils/fastq_stats.py -i 20231107_S0530.grid.fastq 
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/synth.fasta --in 20231107_S0530.grid.fastq --out 20231107_S0530.grid.txt
+optimize:
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231107_S0530.fastq -p 0.187172 0.112361 0.017183
+python3 ~/Code/pipeline/utils/fastq_stats.py -i 20231107_S0530.fastq 
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/synth.fasta --in 20231107_S0530.fastq --out 20231107_S0530.txt
+
+random13
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/phix174.fasta --in random.reads.13.fastq --out random.reads.13.txt
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/synth.fasta --in random.reads.13.fastq --out random.reads.13.synth.txt
+
+PhiX run
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots_roi3_bk_corr.csv -o phix.fastq -g
+python3 ~/Code/pipeline/utils/fastq_stats.py -i phix.grid.fastq --cutoff 0.3
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/phix174.fasta --in phix.grid.fastq --out phix.txt
+
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots_roi3_bk_corr.csv -o phix.fastq -p 0.200598 0.105631 0.008308
+python3 ~/Code/pipeline/utils/fastq_stats.py -i phix.fastq 
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/phix174.fasta --in phix.fastq --out phix.txt
+
