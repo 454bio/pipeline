@@ -59,6 +59,9 @@ def generate_hashlist(genome, hash_len):
 
     genome_position = 0
     while genome_position < (genome_len-hash_len):
+        if pos_list and genome_position not in pos_list:
+            genome_position += 1
+            continue
         index = int(bases2vals(genome[genome_position:genome_position+hash_len]), 4)
         hash_list[index].append(genome_position)
         genome_position += 1
@@ -142,6 +145,7 @@ hash_len = 4
 score_cutoff = 0.0
 score_cutofflen = 0
 direction_filter = 0
+pos_list = None
 
 # parse cmd-line args
 argcc = 1
@@ -167,6 +171,9 @@ while argcc < argc:
     if sys.argv[argcc] == '--direction':
         argcc += 1
         direction_filter = int(sys.argv[argcc])
+    if sys.argv[argcc] == '--poslist':
+        argcc += 1
+        pos_list = [int(i) for i in sys.argv[argcc].split(',')]
     if sys.argv[argcc] == '-v':
         verbose += 1
     argcc += 1
@@ -243,7 +250,8 @@ for i, read in enumerate(reads):
             # store reads & ref so we can calc some stats later
             info.append((read, ref_read, rcomp, pos, i))
         else:
-            print('failed to align read: %s to valid reference position' % read)
+            if verbose > 0:
+                print('failed to align read: %s to valid reference position' % read)
 
 if outfile:
     outfile.close()
@@ -300,6 +308,7 @@ top_n_by_len(50 if num_filtered > 50 else num_filtered, 6)
 top_n_by_len(100 if num_filtered > 100 else num_filtered, 6)
 top_n_by_len(50 if num_filtered > 50 else num_filtered, 10)
 top_n_by_len(100 if num_filtered > 100 else num_filtered, 10)
+top_n_by_len(100 if num_filtered > 100 else num_filtered, 12)
 
 counts= {}
 counts['A'] = 0
