@@ -33,3 +33,8 @@ python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/phix174.
 python3 ~/Code/pipeline/utils/fastq_stats.py -i phix.fastq 
 python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/phix174.fasta --in phix.fastq --out phix.txt
 
+20231110_S0532
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231110_S0532.fastq -p 0.208900 0.117788 0.024321
+python3 ~/Code/pipeline/utils/fastq_stats.py -i 20231110_S0532.grid.fastq
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/synth_GC23.fasta --in 20231110_S0532.grid.fastq --out 20231110_S0532.grid.txt
+
