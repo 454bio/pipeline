@@ -59,6 +59,14 @@ plt.hist(errvals.clip(min=0.0, max=1.0), bins=51, range=[0.0, 1.0])
 plt.figure('err_all')
 plt.hist(errvals, bins=101, range=[0.0, 10.0])
 
+plt.figure('ie')
+plt.hist(ievals, bins=21)
+
+plt.figure('cf')
+plt.hist(cfvals, bins=21)
+
+plt.figure('dr')
+plt.hist(drvals, bins=21)
 
 plt.show()
 

@@ -136,6 +136,7 @@ def top_n_by_len(N, L):
     top_by_q_i = np.flip(np.argsort(forced_info[:,0]))
     top_by_q = forced_info[top_by_q_i]
     print('%d %dQ%.2f' % (N, L, np.mean(top_by_q[:N,0])))
+    return top_by_q_i
 
 # set some defaults
 ref_name = 'phix174.fasta'
@@ -146,6 +147,7 @@ score_cutoff = 0.0
 score_cutofflen = 0
 direction_filter = 0
 pos_list = None
+want_plots = False
 
 # parse cmd-line args
 argcc = 1
@@ -174,6 +176,8 @@ while argcc < argc:
     if sys.argv[argcc] == '--poslist':
         argcc += 1
         pos_list = [int(i) for i in sys.argv[argcc].split(',')]
+    if sys.argv[argcc] == '--plots':
+        want_plots = True
     if sys.argv[argcc] == '-v':
         verbose += 1
     argcc += 1
@@ -284,31 +288,51 @@ for read in info:
             direction = 1
 
         if direction_filter == 0 or direction_filter == direction:
-            cov[start:start+len(read[0])] += 1
-            cov_starts[start] += 1
             info_filtered.append(read)
             cov_filtered[start:start+len(read[0])] += 1
+    cov[start:start+len(read[0])] += 1
+    cov_starts[start] += 1
 
 num_filtered = len(info_filtered)
 print('num filtered: %d  forward: %d  rcomp: %d' % (num_filtered, num_forward, num_rcomp))
 
-plt.figure('coverage')
-plt.plot(cov)
+if want_plots:
+    plt.figure('coverage')
+    plt.plot(cov)
 
-plt.figure('starts')
-plt.plot(cov_starts)
+    plt.figure('starts')
+    plt.plot(cov_starts)
 
-plt.figure('filtered coverage')
-plt.plot(cov_filtered)
+    plt.figure('filtered coverage')
+    plt.plot(cov_filtered)
 
 
 print('filtered')
 info = info_filtered
 top_n_by_len(50 if num_filtered > 50 else num_filtered, 6)
 top_n_by_len(100 if num_filtered > 100 else num_filtered, 6)
-top_n_by_len(50 if num_filtered > 50 else num_filtered, 10)
+top_by_q_i = top_n_by_len(50 if num_filtered > 50 else num_filtered, 10)
 top_n_by_len(100 if num_filtered > 100 else num_filtered, 10)
 top_n_by_len(100 if num_filtered > 100 else num_filtered, 12)
+
+cov_top_n = np.zeros(len(ref))
+for i in range(50):
+    read = info[top_by_q_i[i]]
+    start = read[3]
+    if read[2] is True: # rcomp:
+        start -= len(read[0])
+        num_rcomp += 1
+        direction = -1
+    else:
+        num_forward += 1
+        direction = 1
+
+    if direction_filter == 0 or direction_filter == direction:
+        cov_top_n[start:start+len(read[0])] += 1
+if want_plots:
+    plt.figure('coverage of top 50Q10')
+    plt.plot(cov_top_n)
+
 
 counts= {}
 counts['A'] = 0
@@ -335,5 +359,6 @@ print('%d filtered reads with avg q-score at full length: %.2f' % (len(info_filt
 
 print('base counts: A: %d  C: %d  G: %d  T: %d\n' % (counts['A'], counts['C'], counts['G'], counts['T']))
 
-plt.show()
+if want_plots:
+    plt.show()
 

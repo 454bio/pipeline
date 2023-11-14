@@ -34,7 +34,23 @@ python3 ~/Code/pipeline/utils/fastq_stats.py -i phix.fastq
 python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/phix174.fasta --in phix.fastq --out phix.txt
 
 20231110_S0532
-~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231110_S0532.fastq -p 0.208900 0.117788 0.024321
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231110_S0532.grid.fastq -g
 python3 ~/Code/pipeline/utils/fastq_stats.py -i 20231110_S0532.grid.fastq
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231110_S0532.fastq -p 0.208900 0.117788 0.024321
+python3 ~/Code/pipeline/utils/fastq_stats.py -i 20231110_S0532.fastq
 python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/synth_GC23.fasta --in 20231110_S0532.grid.fastq --out 20231110_S0532.grid.txt
+python3 ~/Code/pipeline/utils/filtered_stats.py -i 20231110_S0532.grid.txt.filtered
+
+20231112_S0536
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231112_S0536.grid.fastq -g
+python3 ~/Code/pipeline/utils/fastq_stats.py -i 20231112_S0536.grid.fastq
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/synth_GC23.fasta --in 20231112_S0536.grid.fastq --out 20231112_S0536.grid.txt --poslist 0,16,32,48 --direction 1
+python3 ~/Code/pipeline/utils/filtered_stats.py -i 20231112_S0536.grid.txt.filtered
+
+20231112_S0536 (optimized with some hand tuning on ie because I don't like the initial drop)
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231112_S0536.grid6.fastq -g -c 6
+python3 ~/Code/pipeline/utils/fastq_stats.py -i 20231112_S0536.grid6.fastq --cutoff 0.1
+~/Code/pipeline/basecall/Basecall -i color_transformed_spots.csv -o 20231112_S0536.fastq -p 0.17 0.09 0.020
+python3 ~/Code/pipeline/align/align_reads.py --ref ~/Code/pipeline/refs/synth_GC23.fasta --in 20231112_S0536.fastq --out 20231112_S0536.txt --poslist 0,16,32,48 --direction 1 --plots
+python3 ~/Code/pipeline/utils/filtered_stats.py -i 20231112_S0536.txt.filtered
 

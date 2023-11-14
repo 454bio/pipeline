@@ -127,9 +127,11 @@ void NormalizeSpotData(std::vector<SpotData> &spotData)
     }
 }
 
-double CallBases(char *dnaTemplate, std::vector<Signal> &measuredSignal, std::vector<double> &errorPerCycle, double ie, double cf, double dr)
+double CallBases(char *dnaTemplate, std::vector<Signal> &measuredSignal, std::vector<double> &errorPerCycle, double ie, double cf, double dr, int maxNumCycles=0)
 {
     int numCycles = measuredSignal.size();
+    if (maxNumCycles > 0 and maxNumCycles < numCycles)
+        numCycles = maxNumCycles;
 
     Model4 m;
     m.Init(100);
@@ -192,7 +194,7 @@ double CallBases(char *dnaTemplate, std::vector<Signal> &measuredSignal, std::ve
     return cumulativeError/numCycles;
 }
 
-PhaseParams GridSearch(char *dnaTemplate, std::vector<Signal> &measuredSignal, std::vector<double> &errorPerCycle)
+PhaseParams GridSearch(char *dnaTemplate, std::vector<Signal> &measuredSignal, std::vector<double> &errorPerCycle, int maxNumCycles=0)
 {
     // grid-search first, then call based on lowest error
 
@@ -206,7 +208,7 @@ PhaseParams GridSearch(char *dnaTemplate, std::vector<Signal> &measuredSignal, s
             double cftest = cfmin + (cfi/(double)(cfnum-1.0)) * (cfmax-cfmin);
             for(int iei=0;iei<ienum;iei++) {
                 double ietest = iemin + (iei/(double)(ienum-1.0)) * (iemax-iemin);
-                double err = CallBases(dnaTemplate, measuredSignal, errorPerCycle, ietest, cftest, drtest);
+                double err = CallBases(dnaTemplate, measuredSignal, errorPerCycle, ietest, cftest, drtest, maxNumCycles);
                 if (err < minerr) {
                     minerr = err;
                     params.ie = ietest;
@@ -227,6 +229,7 @@ int main(int argc, char *argv[])
     double ie = 0.0, cf = 0.0, dr = 0.0;
     const char *fastQFileName = "out.fastq";
     bool wantNormalize = false;
+    int maxNumCycles = 0;
 
     int argcc = 1;
     while (argcc < argc) {
@@ -263,6 +266,10 @@ int main(int argc, char *argv[])
                 dr = atof(argv[++argcc]);
             break;
 
+            case 'c':
+                maxNumCycles = atoi(argv[++argcc]);
+            break;
+
             case 'n':
                 wantNormalize = true;
             break;
@@ -297,10 +304,11 @@ int main(int argc, char *argv[])
     char basecalls[1024];
     std::vector<double> errorPerCycle(numCycles, 0);
     std::vector<double> qualScoreList;
+    int progress = -1;
     for(int i=0;i<numSpots;i++) {
         PhaseParams params;
         if (gridsearch)
-            params = GridSearch(dnaTemplate, spotData[i].vals, errorPerCycle);
+            params = GridSearch(dnaTemplate, spotData[i].vals, errorPerCycle, maxNumCycles);
         else {
             params.ie = ie;
             params.cf = cf;
@@ -330,7 +338,19 @@ int main(int argc, char *argv[])
             ss << "\"err\":" << params.err << "}";
             fprintf(fastQFile, "@spot_%06d%s\n%s\n+\n%s\n", i, ss.str().c_str(), basecalls, qscores.c_str());
         }
+
+        if (gridsearch) {
+            double percent = (double)i/(numSpots-1.0);
+            int newProgress = (int)(percent*100.0);
+            if (newProgress != progress) {
+                progress = newProgress;
+                printf("\rprogress: %02d%%", progress);
+                fflush(stdout);
+            }
+        }
     }
+    if (gridsearch)
+        printf("\ndone.\n");
 
     if (fastQFile)
         fclose(fastQFile);
