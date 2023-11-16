@@ -7,6 +7,8 @@
 #include <math.h>
 #include <sstream>
 
+int verbose = 0;
+
 struct PhaseParams {
     double ie;
     double cf;
@@ -273,6 +275,9 @@ int main(int argc, char *argv[])
             case 'n':
                 wantNormalize = true;
             break;
+
+            case 'v':
+                verbose++;
         }
         argcc++;
     }
@@ -339,7 +344,7 @@ int main(int argc, char *argv[])
             fprintf(fastQFile, "@spot_%06d%s\n%s\n+\n%s\n", i, ss.str().c_str(), basecalls, qscores.c_str());
         }
 
-        if (gridsearch) {
+        if (gridsearch && verbose>0) {
             double percent = (double)i/(numSpots-1.0);
             int newProgress = (int)(percent*100.0);
             if (newProgress != progress) {
@@ -349,7 +354,7 @@ int main(int argc, char *argv[])
             }
         }
     }
-    if (gridsearch)
+    if (gridsearch && verbose>0)
         printf("\ndone.\n");
 
     if (fastQFile)
