@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 filename = 'reads.fastq'
 err_cutoff = 0
+show_plots = False
 
 argcc = 1
 argc = len(sys.argv)
@@ -15,6 +16,8 @@ while argcc < argc:
     if sys.argv[argcc] == '--cutoff':
         argcc += 1
         err_cutoff = float(sys.argv[argcc])
+    if sys.argv[argcc] == '--show_plots':
+        show_plots = True
     argcc += 1
 
 # read in the optional json params from the info line of each read, accumulate stats
@@ -41,6 +44,10 @@ else:
 
 print('error mean: %f median: %f' % (np.mean(errvals), np.median(errvals)))
 
+plt.figure('err')
+plt.hist(errvals.clip(min=0.0, max=1.0), bins=51, range=[0.0, 1.0])
+plt.savefig('err.png')
+
 if vals.ndim  > 1:
     if err_cutoff == 0:
         err_cutoff = np.median(errvals) * 2
@@ -53,20 +60,18 @@ if vals.ndim  > 1:
     print('dr mean: %f median: %f' % (np.mean(drvals), np.median(drvals)))
 
 
-plt.figure('err')
-plt.hist(errvals.clip(min=0.0, max=1.0), bins=51, range=[0.0, 1.0])
+    plt.figure('ie')
+    plt.hist(ievals, bins=21)
+    plt.savefig('ie.png')
 
-plt.figure('err_all')
-plt.hist(errvals, bins=101, range=[0.0, 10.0])
+    plt.figure('cf')
+    plt.hist(cfvals, bins=21)
+    plt.savefig('cf.png')
 
-plt.figure('ie')
-plt.hist(ievals, bins=21)
+    plt.figure('dr')
+    plt.hist(drvals, bins=21)
+    plt.savefig('dr.png')
 
-plt.figure('cf')
-plt.hist(cfvals, bins=21)
-
-plt.figure('dr')
-plt.hist(drvals, bins=21)
-
-plt.show()
+if show_plots:
+    plt.show()
 

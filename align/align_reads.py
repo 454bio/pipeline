@@ -296,15 +296,17 @@ for read in info:
 num_filtered = len(info_filtered)
 print('num filtered: %d  forward: %d  rcomp: %d' % (num_filtered, num_forward, num_rcomp))
 
-if want_plots:
-    plt.figure('coverage')
-    plt.plot(cov)
+plt.figure('coverage')
+plt.plot(cov)
+plt.savefig('coverage.png')
 
-    plt.figure('starts')
-    plt.plot(cov_starts)
+plt.figure('starts')
+plt.plot(cov_starts)
+plt.savefig('starts.png')
 
-    plt.figure('filtered coverage')
-    plt.plot(cov_filtered)
+plt.figure('filtered coverage')
+plt.plot(cov_filtered)
+plt.savefig('filtered_coverage.png')
 
 
 print('filtered')
@@ -329,9 +331,10 @@ for i in range(50):
 
     if direction_filter == 0 or direction_filter == direction:
         cov_top_n[start:start+len(read[0])] += 1
-if want_plots:
-    plt.figure('coverage of top 50Q10')
-    plt.plot(cov_top_n)
+
+plt.figure('coverage of top 50Q10')
+plt.plot(cov_top_n)
+plt.savefig('coverage_top_50Q10.png')
 
 
 counts= {}
