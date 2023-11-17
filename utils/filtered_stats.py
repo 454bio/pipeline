@@ -25,15 +25,18 @@ with open(in_filename) as f:
                 qscore = float(tokens[3])
                 pos = int(tokens[5])
                 read = f.readline()
+                readlen = len(read)
                 match = f.readline().rstrip()
                 perfect = match.find(' ')
                 if perfect == -1:
                     perfect = len(match)
-                info.append([qscore, pos, perfect])
+                info.append([qscore, pos, perfect, readlen])
 info = np.array(info)
 
 # analysis
 
-for i in range(5,14):
+readlen = int(info[0,3]) # just pull length from first read and assume they are all this way - hack for now
+
+for i in range(5,readlen+1):
     print('len %d perfect: %d' % (i, np.count_nonzero(info[:,2] == i)))
 
