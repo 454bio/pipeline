@@ -2,7 +2,6 @@ import sys
 import numpy as np
 import math
 import editdistance
-import sam_utils
 import matplotlib.pyplot as plt
 
 verbose = 0
@@ -214,15 +213,9 @@ if verbose > 2:
 outfile = None
 if out_filename:
     outfile = open(out_filename, 'w') 
-    sam_filename = out_filename.split('.')[0] + '.sam'
-else:
-    sam_filename = 'out.sam'
 
 # stores reads & ref so we can track some mapping stats
 info = []
-
-# map reads and write sam file
-sam = sam_utils.SamUtils(sam_filename)
 
 print('mapping reads...')
 for i, read in enumerate(reads):
@@ -249,7 +242,6 @@ for i, read in enumerate(reads):
             else:
                 print(outtxt)
             read_name = 'read_' + str(i)
-            sam.AddRead(read, pos, ref_read, read_name)
 
             # store reads & ref so we can calc some stats later
             info.append((read, ref_read, rcomp, pos, i))
