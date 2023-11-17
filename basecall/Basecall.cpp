@@ -25,9 +25,9 @@ struct SpotData {
 double drmin = 0.005;
 double drmax = 0.025;
 int    drnum = 5;
-double iemin = 0.12;
-double iemax = 0.21;
-int    ienum = 19;
+double iemin = 0.13;
+double iemax = 0.19;
+int    ienum = 12;
 double cfmin = 0.07;
 double cfmax = 0.12;
 int    cfnum = 10;
