@@ -28,11 +28,14 @@ with open(filename) as f:
         if line[0] == '@':
             tokens = line.strip().split(' ')
             if len(tokens) >= 2:
-                stats = json.loads(tokens[1])
-                if 'ie' in stats:
-                    vals.append([stats['ie'], stats['cf'], stats['dr'], stats['err']])
-                else:
-                    vals.append(stats['err'])
+                try:
+                    stats = json.loads(tokens[1])
+                    if 'ie' in stats:
+                        vals.append([stats['ie'], stats['cf'], stats['dr'], stats['err']])
+                    else:
+                        vals.append(stats['err'])
+                except:
+                    print('failed to get json from: %s' % line)
 
 vals = np.array(vals)
 print('shape: %s' % str(vals.shape))
