@@ -336,6 +336,8 @@ counts['G'] = 0
 counts['T'] = 0
 
 avg_scores = 0.0
+avg_scores5 = 0.0
+avg_scores10 = 0.0
 filtered_filename = out_filename + '.filtered'
 with open(filtered_filename, 'w') as f:
     for read in info_filtered:
@@ -348,9 +350,13 @@ with open(filtered_filename, 'w') as f:
             counts[read[0][i]] += 1
         f.write('@read: %d q-score: %.2f pos: %d rcomp: %s\n%s\n%s\n%s\n' % (read[4], scoremin(read[0], read[1], 13)[0], read[3], read[2], read[0], bars, read[1]))
         avg_scores += scoremin(read[0], read[1], 13)[0]
+        avg_scores5 += scoremin(read[0], read[1], 5)[0]
+        avg_scores10 += scoremin(read[0], read[1], 10)[0]
 
 avg_scores /= len(info_filtered)
-print('%d filtered reads with avg q-score at full length: %.2f' % (len(info_filtered), avg_scores))
+avg_scores5 /= len(info_filtered)
+avg_scores10 /= len(info_filtered)
+print('%d filtered reads with avg q-score at full length: %.2f  len5: %.2f  len10: %.2f' % (len(info_filtered), avg_scores, avg_scores5, avg_scores10))
 
 print('base counts: A: %d  C: %d  G: %d  T: %d\n' % (counts['A'], counts['C'], counts['G'], counts['T']))
 
