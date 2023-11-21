@@ -129,6 +129,23 @@ void NormalizeSpotData(std::vector<SpotData> &spotData)
     }
 }
 
+void NormalizeSpotDataSignal(std::vector<SpotData> &spotData)
+{
+    int numSpots = spotData.size();
+    for(int i=0;i<numSpots;i++) {
+        int numCycles = spotData[i].vals.size();
+        double signal = 0.0;
+        for(int b=0;b<4;b++)
+            signal += spotData[i].vals[0].v[b];
+        double norm = 1.0/signal;
+        for (int c=0;c<numCycles;c++) {
+            for(int b=0;b<4;b++) {
+                spotData[i].vals[c].v[b] *= norm;
+            }
+        }
+    }
+}
+
 double CallBases(char *dnaTemplate, std::vector<Signal> &measuredSignal, std::vector<double> &errorPerCycle, double ie, double cf, double dr, int maxNumCycles=0)
 {
     int numCycles = measuredSignal.size();
@@ -232,6 +249,7 @@ int main(int argc, char *argv[])
     const char *fastQFileName = "out.fastq";
     bool wantNormalize = false;
     int maxNumCycles = 0;
+    int skip = 0;
 
     int argcc = 1;
     while (argcc < argc) {
@@ -291,7 +309,8 @@ int main(int argc, char *argv[])
 
     // normalize
     if (wantNormalize)
-        NormalizeSpotData(spotData);
+        // NormalizeSpotData(spotData);
+        NormalizeSpotDataSignal(spotData);
 
     // grid-search phase-correct each spot
     int numReadsAll = 0; // needs to be min 4 bases correct
