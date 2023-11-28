@@ -1,0 +1,4 @@
+*.o
+Basecall
+out.fastq
+color_transformed_spots.csv
