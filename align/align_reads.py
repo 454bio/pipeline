@@ -288,8 +288,15 @@ for read in info:
 num_filtered = len(info_filtered)
 print('num filtered: %d  forward: %d  rcomp: %d' % (num_filtered, num_forward, num_rcomp))
 
+ymax = np.max(cov)
+ymax = round((ymax+99)/100) * 100
+if ymax < 100:
+    ymax = 100
+
 plt.figure('coverage')
 plt.plot(cov)
+ax = plt.gca()
+ax.set_ylim([0, ymax])
 plt.savefig('coverage.png')
 
 plt.figure('starts')
@@ -298,6 +305,8 @@ plt.savefig('starts.png')
 
 plt.figure('filtered coverage')
 plt.plot(cov_filtered)
+ax = plt.gca()
+ax.set_ylim([0, ymax])
 plt.savefig('filtered_coverage.png')
 
 
