@@ -310,13 +310,16 @@ ax.set_ylim([0, ymax])
 plt.savefig('filtered_coverage.png')
 
 
+readlen = len(reads[0])
 print('filtered')
 info = info_filtered
 top_n_by_len(50 if num_filtered > 50 else num_filtered, 6)
 top_n_by_len(100 if num_filtered > 100 else num_filtered, 6)
-top_by_q_i = top_n_by_len(50 if num_filtered > 50 else num_filtered, 10)
-top_n_by_len(100 if num_filtered > 100 else num_filtered, 10)
-top_n_by_len(100 if num_filtered > 100 else num_filtered, 12)
+if readlen >= 10:
+    top_by_q_i = top_n_by_len(50 if num_filtered > 50 else num_filtered, 10)
+    top_n_by_len(100 if num_filtered > 100 else num_filtered, 10)
+if readlen >= 12:
+    top_n_by_len(100 if num_filtered > 100 else num_filtered, 12)
 
 cov_top_n = np.zeros(len(ref))
 for i in range(50):
@@ -344,6 +347,7 @@ counts['C'] = 0
 counts['G'] = 0
 counts['T'] = 0
 
+qscorelen = readlen
 avg_scores = 0.0
 avg_scores5 = 0.0
 avg_scores10 = 0.0
@@ -357,8 +361,8 @@ with open(filtered_filename, 'w') as f:
             else:
                 bars += ' '
             counts[read[0][i]] += 1
-        f.write('@read: %d q-score: %.2f pos: %d rcomp: %s\n%s\n%s\n%s\n' % (read[4], scoremin(read[0], read[1], 13)[0], read[3], read[2], read[0], bars, read[1]))
-        avg_scores += scoremin(read[0], read[1], 13)[0]
+        f.write('@read: %d q-score: %.2f pos: %d rcomp: %s\n%s\n%s\n%s\n' % (read[4], scoremin(read[0], read[1], qscorelen)[0], read[3], read[2], read[0], bars, read[1]))
+        avg_scores += scoremin(read[0], read[1], qscorelen)[0]
         avg_scores5 += scoremin(read[0], read[1], 5)[0]
         avg_scores10 += scoremin(read[0], read[1], 10)[0]
 
