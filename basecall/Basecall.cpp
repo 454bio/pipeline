@@ -59,7 +59,7 @@ std::vector<std::string> Parse(char *str, char delim)
     return tokens;
 }
 
-void LoadSpotData(const char *filename, std::vector<SpotData> &spotData)
+void LoadSpotData(const char *filename, std::vector<SpotData> &spotData, std::vector<std::string> &whitelistSpots)
 {
     std::vector<Signal> vals;
     int spotId;
@@ -68,6 +68,7 @@ void LoadSpotData(const char *filename, std::vector<SpotData> &spotData)
     Signal s;
     int lastSpotId = 0;
     std::string spotName;
+    bool useWhitelist = whitelistSpots.size() > 0;
 
     FILE *fp = fopen(filename, "r");
     if (fp) {
@@ -83,7 +84,15 @@ void LoadSpotData(const char *filename, std::vector<SpotData> &spotData)
                     SpotData d;
                     d.vals = vals;
                     d.spotName = spotName;
-                    spotData.push_back(d);
+
+                    bool saveSpot = true;
+                    if (useWhitelist) {
+                        saveSpot = false;
+                        if (std::find(whitelistSpots.begin(), whitelistSpots.end(), spotName) != whitelistSpots.end())
+                            saveSpot = true;
+                    }
+                    if (saveSpot)
+                        spotData.push_back(d);
                 }
                 lastSpotId = spotId;
                 vals.clear();
@@ -100,7 +109,14 @@ void LoadSpotData(const char *filename, std::vector<SpotData> &spotData)
         SpotData d;
         d.vals = vals;
         d.spotName = spotName;
-        spotData.push_back(d);
+        bool saveSpot = true;
+        if (useWhitelist) {
+            saveSpot = false;
+            if (std::find(whitelistSpots.begin(), whitelistSpots.end(), spotName) != whitelistSpots.end())
+                saveSpot = true;
+        }
+        if (saveSpot)
+            spotData.push_back(d);
     }
 }
 
@@ -250,6 +266,7 @@ int main(int argc, char *argv[])
     bool wantNormalize = false;
     int maxNumCycles = 0;
     int skip = 0;
+    const char *whitelistName = nullptr;
 
     int argcc = 1;
     while (argcc < argc) {
@@ -294,15 +311,37 @@ int main(int argc, char *argv[])
                 wantNormalize = true;
             break;
 
+            case 'w':
+                whitelistName = argv[++argcc];
+            break;
+
             case 'v':
                 verbose++;
         }
         argcc++;
     }
 
+    // load optional white-list
+    std::vector<std::string> whitelistSpots;
+    if (whitelistName) {
+        FILE *fp = fopen(whitelistName, "r");
+        if (fp) {
+            char line[256];
+            while(fgets(line, sizeof(line), fp) != NULL) {
+                int len = strlen(line);
+                if (len > 0) {
+                    line[len-1] = 0;
+                    std::string spotName = line;
+                    whitelistSpots.push_back(spotName);
+                }
+            }
+            fclose(fp);
+        }
+    }
+
     // load spots
     std::vector<SpotData> spotData;
-    LoadSpotData(spotFile, spotData);
+    LoadSpotData(spotFile, spotData, whitelistSpots);
     int numSpots = spotData.size();
     printf("Loaded %d spots\n", numSpots);
     int numCycles = spotData[0].vals.size();
