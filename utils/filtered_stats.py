@@ -147,6 +147,15 @@ num = len(info)
 for i in range(5,readlen+1):
     print('len %d perfect: %d' % (i, np.count_nonzero(info[:,4] == i)))
 
+# try and pull out which template we mapped to, based on position
+max_pos = int(np.max(info[:,3]))
+pos_array = np.zeros(max_pos+1);
+for i in range(num):
+    pos_array[int(info[i,3])] += 1
+for i in range(max_pos+1):
+    if pos_array[i] > 0:
+        print('pos %d: %d reads' % (i, int(pos_array[i])))
+
 if info.shape[1] > 7:
     plt.figure('perfect vs qual')
     plt.scatter(info[:,4], info[:,7])

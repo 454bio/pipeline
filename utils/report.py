@@ -33,7 +33,7 @@ html.add_text('<h2>Alignment</h2>')
 html.add_images([
     {'img':'coverage.png', 'subtitle':'coverage from all reads'},
     {'img':'filtered_coverage.png', 'subtitle':'filtered read coverage'},
-    {'img':'coverage_top_50Q10.png', 'subtitle':'coverage from top 50 Q10 reads'}
+    {'img':'coverage_top_n.png', 'subtitle':'coverage from top-N HQ reads'}
 ])
 html.end_div()
 

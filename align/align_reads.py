@@ -282,8 +282,8 @@ for read in info:
         if direction_filter == 0 or direction_filter == direction:
             info_filtered.append(read)
             cov_filtered[start:start+len(read[0])] += 1
-    cov[start:start+len(read[0])] += 1
-    cov_starts[start] += 1
+        cov[start:start+len(read[0])] += 1
+        cov_starts[start] += 1
 
 num_filtered = len(info_filtered)
 print('num filtered: %d  forward: %d  rcomp: %d' % (num_filtered, num_forward, num_rcomp))
@@ -321,9 +321,10 @@ if readlen >= 10:
     top_n_by_len(100 if num_filtered > 100 else num_filtered, 10)
     top_n_by_q_i = top_n_by_len(top_n, 10)
 if readlen >= 12:
-    top_n_by_len(100 if num_filtered > 100 else num_filtered, 12)
+    top_n_by_q_i = top_n_by_len(top_n, 12)
 
 cov_top_n = np.zeros(len(ref))
+num_top_n = 0
 for i in range(top_n):
     #read = info[top_by_q_i[i]]
     read = info[top_n_by_q_i[i]]
@@ -338,10 +339,13 @@ for i in range(top_n):
 
     if direction_filter == 0 or direction_filter == direction:
         cov_top_n[start:start+len(read[0])] += 1
+        num_top_n += 1
 
-plt.figure('coverage of top 50Q10')
+plt.figure('coverage of top n')
 plt.plot(cov_top_n)
-plt.savefig('coverage_top_50Q10.png')
+label = 'top %d' % num_top_n
+plt.text(0.0, 0.0, label, horizontalalignment='left', verticalalignment='bottom', transform=ax.transAxes)
+plt.savefig('coverage_top_n.png')
 
 
 counts= {}
