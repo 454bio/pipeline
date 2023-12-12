@@ -310,6 +310,7 @@ ax.set_ylim([0, ymax])
 plt.savefig('filtered_coverage.png')
 
 
+top_n = 1000 if num_filtered >= 1000 else num_filtered
 readlen = len(reads[0])
 print('filtered')
 info = info_filtered
@@ -318,12 +319,14 @@ top_n_by_len(100 if num_filtered > 100 else num_filtered, 6)
 if readlen >= 10:
     top_by_q_i = top_n_by_len(50 if num_filtered > 50 else num_filtered, 10)
     top_n_by_len(100 if num_filtered > 100 else num_filtered, 10)
+    top_n_by_q_i = top_n_by_len(top_n, 10)
 if readlen >= 12:
     top_n_by_len(100 if num_filtered > 100 else num_filtered, 12)
 
 cov_top_n = np.zeros(len(ref))
-for i in range(50):
-    read = info[top_by_q_i[i]]
+for i in range(top_n):
+    #read = info[top_by_q_i[i]]
+    read = info[top_n_by_q_i[i]]
     start = read[3]
     if read[2] is True: # rcomp:
         start -= len(read[0])
