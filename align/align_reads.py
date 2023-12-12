@@ -109,6 +109,8 @@ def scoremin(seq, ref, minlen):
         best_q_len = minlen
     else:
         perfect_len = minlen
+        bestq = 30
+        best_q_len = minlen
 
     for i in range(minlen,ls):
         if seq[i] != ref[i]:
@@ -116,7 +118,7 @@ def scoremin(seq, ref, minlen):
         if errors > 0:
             q = qualscore(i+1, errors)
         else:
-            q = 0
+            q = 30
         if perfect_len == 0 and errors == 1:
             perfect_len = i
         if q > bestq:
