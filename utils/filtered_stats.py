@@ -199,7 +199,8 @@ if info.shape[1] > 7:
     #filter_params=[12,12,12,1]
     #filter_params=[9,5,9,9]
     #filter_params=[9,9,9,9]
-    filter_params=[10,10,10,10]
+    #filter_params=[10,10,10,10]
+    filter_params=[10,7,7,10]
     real_filtered = []
     for i in range(num):
         if info[i,8] >= filter_params[0] and info[i,9] >= filter_params[1] and info[i,10] >= filter_params[2] and info[i,11] >= filter_params[3]:

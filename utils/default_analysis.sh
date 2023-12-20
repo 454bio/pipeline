@@ -23,14 +23,15 @@ options=$2
 
 if [[ "${options}" == "fast" ]]; then
     echo running fast
-    ${basecall_path}/Basecall -i color_transformed_spots.csv -o ${run_name}.fastq -p 0.15 0.11 0.017 > ${run_name}.log
+    ${basecall_path}/Basecall -i color_transformed_spots.csv -o ${run_name}.fastq -p 0.16 0.11 0.017 > ${run_name}.log
 elif [[ "${options}" == "gridw" ]]; then
     echo running grid with custom params and whitelist
     ${basecall_path}/Basecall -i color_transformed_spots.csv -o ${run_name}.fastq -g -v -G 0.20 0.30 21 0.10 0.17 15 0.02 0.07 11 -w ${run_name}.whitelist.txt -c 7  > ${run_name}.log
 elif [[ "${options}" == "fastopt" ]]; then
     echo running fast optimized with normalzed data
     #${basecall_path}/Basecall -i color_transformed_spots.csv -o ${run_name}.fastq -p 0.27 0.145 0.05 > ${run_name}.log
-    ${basecall_path}/Basecall -i color_transformed_spots.csv -o ${run_name}.fastq -p 0.29 0.14 0.045 > ${run_name}.log
+    #${basecall_path}/Basecall -i color_transformed_spots.csv -o ${run_name}.fastq -p 0.29 0.14 0.045 > ${run_name}.log
+    ${basecall_path}/Basecall -i color_transformed_spots.csv -o ${run_name}.fastq -p 0.22 0.135 0.045 > ${run_name}.log
 elif [[ "${options}" == "fastn" ]]; then
     echo running fast with normalzed data
     ${basecall_path}/Basecall -i color_transformed_spots.csv -o ${run_name}.fastq -p 0.15 0.11 0.017 -n > ${run_name}.log
