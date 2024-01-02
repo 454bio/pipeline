@@ -7,7 +7,7 @@ align_path=~/Code/pipeline/align
 
 # defaults for reference genome
 ref_path=~/Code/pipeline/refs
-ref_name=synth_GC23.fasta
+ref_name=synth_GC23_26nt.fasta
 #ref_name=PhiX_GC23.fasta
 
 # we require an input run name, the output files generated will all begin with this name
@@ -53,7 +53,7 @@ else
 fi
 
 python3 ${util_path}/fastq_stats.py -i ${run_name}.fastq >> ${run_name}.log
-python3 ${align_path}/align_reads.py --ref ${ref_path}/${ref_name} --in ${run_name}.fastq --out ${run_name}.txt --poslist 0,16,32,48 --direction 1 >> ${run_name}.log
+python3 ${align_path}/align_reads.py --ref ${ref_path}/${ref_name} --in ${run_name}.fastq --out ${run_name}.txt --poslist 0,26,52,78 --direction 1 >> ${run_name}.log
 #python3 ${align_path}/align_reads.py --ref ${ref_path}/${ref_name} --in ${run_name}.fastq --out ${run_name}.txt >> ${run_name}.log
 python3 ${util_path}/filtered_stats.py -i ${run_name}.txt.filtered >> ${run_name}.log
 python3 ${util_path}/report.py -i ${run_name}.log -o ${run_name}.html

@@ -3,6 +3,7 @@ import numpy as np
 import json
 import matplotlib.pyplot as plt
 import math
+import random
 
 def qualscore(readlen, num_errors):
     if num_errors == 0:
@@ -70,6 +71,7 @@ def lenq(seq, ref, minq):
 
 in_filename = 'S.txt.filtered'
 show_plots = False
+explore_num = 20
 
 argc = len(sys.argv)
 argcc = 1
@@ -77,6 +79,9 @@ while argcc < argc:
     if sys.argv[argcc] == '-i':
         argcc += 1
         in_filename = sys.argv[argcc]
+    if sys.argv[argcc] == '--explore':
+        argcc += 1
+        explore_num = int(sys.argv[argcc])
     if sys.argv[argcc] == '--plots':
         show_plots = True
     argcc += 1
@@ -105,8 +110,12 @@ with open(in_filename) as f:
                 if perfect == -1:
                     perfect = len(match)
                 ref = f.readline().rstrip()
-                q10 = scoremin(read, ref, 10)
-                lenq10 = lenq(read, ref, 10)
+                if readlen >= 10:
+                    q10 = scoremin(read, ref, 10)
+                    lenq10 = lenq(read, ref, 10)
+                else:
+                    q10 = 0
+                    lenq10 = 0
                 info.append([spot_id, qscore, q10, pos, perfect, readlen, lenq10])
 
 # open the fastq file, and for each read we can find in the filtered info, include additional metrics
@@ -129,8 +138,12 @@ with open(run_name + ".fastq") as f:
                         _ = f.readline()
                         qual_text = f.readline()
                         # append the first few quality scores
+                        readlen = info[info_index][5]
                         for i in range(10):
-                            qval = ord(qual_text[i]) - 33
+                            if i < readlen:
+                                qval = ord(qual_text[i]) - 33
+                            else:
+                                qval = 0
                             info[info_index].append(qval)
                         info_index += 1
                         if info_index >= len(info):
@@ -184,16 +197,28 @@ for i in range(num):
     if info[i,2] >= 10:
         filtered.append(info[i]) # wow, such a hack - I need a numpy way to select, which I know exists
 filtered = np.array(filtered)
-plt.figure('cheat 10Q10 filtered')
-plt.hist(filtered[:,2])
-print('cheat filtered: %d 10Q%.2f' % (len(filtered), np.mean(filtered[:,2])))
+if len(filtered) > 0:
+    plt.figure('cheat 10Q10 filtered')
+    plt.hist(filtered[:,2])
+    print('cheat filtered: %d 10Q%.2f' % (len(filtered), np.mean(filtered[:,2])))
 
 whitelist_name = run_name + '.whitelist.txt'
 with open(whitelist_name, 'w') as f:
     for i in range(len(filtered)):
         val = filtered[i][0] # white-list needs to be zero-based for the C++ Basecaller
         f.write('%d\n' % val)
-    
+
+# dump the id's of 20 (explore_num) of the filtered reads at random
+if len(filtered) > 0:
+    randomIds = random.sample(range(len(filtered)), explore_num)
+    first = True
+    sys.stdout.write('HQ reads:\n')
+    for i in randomIds:
+        if not first:
+            sys.stdout.write(',')
+        sys.stdout.write('%d' % filtered[i][0])
+        first = False
+    sys.stdout.write('\n')
 
 if info.shape[1] > 7:
     #filter_params=[12,12,12,1]

@@ -318,12 +318,16 @@ print('filtered')
 info = info_filtered
 top_n_by_len(50 if num_filtered > 50 else num_filtered, 6)
 top_n_by_len(100 if num_filtered > 100 else num_filtered, 6)
+
 if readlen >= 10:
     top_by_q_i = top_n_by_len(50 if num_filtered > 50 else num_filtered, 10)
     top_n_by_len(100 if num_filtered > 100 else num_filtered, 10)
-    top_n_by_q_i = top_n_by_len(top_n, 10)
-if readlen >= 12:
-    top_n_by_q_i = top_n_by_len(top_n, 12)
+
+if readlen > 12:
+    top_readlen = 12
+else:
+    top_readlen = readlen
+top_n_by_q_i = top_n_by_len(top_n, top_readlen)
 
 cov_top_n = np.zeros(len(ref))
 num_top_n = 0
@@ -373,7 +377,8 @@ with open(filtered_filename, 'w') as f:
         f.write('@read: %d q-score: %.2f pos: %d rcomp: %s\n%s\n%s\n%s\n' % (read[4], scoremin(read[0], read[1], qscorelen)[0], read[3], read[2], read[0], bars, read[1]))
         avg_scores += scoremin(read[0], read[1], qscorelen)[0]
         avg_scores5 += scoremin(read[0], read[1], 5)[0]
-        avg_scores10 += scoremin(read[0], read[1], 10)[0]
+        if readlen >= 10:
+            avg_scores10 += scoremin(read[0], read[1], 10)[0]
 
 avg_scores /= len(info_filtered)
 avg_scores5 /= len(info_filtered)
